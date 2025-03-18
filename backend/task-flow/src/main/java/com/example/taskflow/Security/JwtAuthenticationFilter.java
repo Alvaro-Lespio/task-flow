@@ -67,11 +67,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .signWith(SECRET_KEY)
                 .compact();
         response.addHeader(HEADER_AUTHORIZATION,PREFIX_TOKEN+token);
-        Map<String,String> body = new HashMap<>();
-        body.put("token",token);
-        body.put("username",username);
-        body.put("message",String.format("Welcome %s",username));
-        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+        String tokenString = "Token: " + token;
+        response.getWriter().write(tokenString);
         response.setContentType(CONTENT_TYPE);
         response.setStatus(200);
     }
