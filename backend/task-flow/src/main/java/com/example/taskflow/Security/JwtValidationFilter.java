@@ -8,12 +8,19 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,40 +30,33 @@ import java.util.Map;
 
 import static com.example.taskflow.Security.TokenJwtConfig.*;
 
-
-public class JwtValidationFilter extends BasicAuthenticationFilter {
-    public JwtValidationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
+@Component
+public class JwtValidationFilter extends OncePerRequestFilter {
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private JwtUtilService jwtUtilService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String header = request.getHeader(HEADER_AUTHORIZATION);
 
-        if(header == null || header.startsWith(PREFIX_TOKEN)){
-            chain.doFilter(request, response);
-            return;
-        }
-        String token = header.replace(PREFIX_TOKEN, "");
-        try {
-            Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
-            String username = claims.getSubject();
-            Object authoritiesClaims = claims.get("authorities");
+            if(header!=null && header.startsWith(PREFIX_TOKEN)){
+                String jwt = header.substring(PREFIX_TOKEN.length());
+                String username = this.jwtUtilService.extractUsername(jwt);
 
-            Collection<? extends GrantedAuthority> authorities = Arrays.asList(new ObjectMapper().addMixIn(SimpleGrantedAuthority.class,SimpleGrantedAuthorityJsonCreator.class).readValue(authoritiesClaims.toString().getBytes(), SimpleGrantedAuthority[].class));
+                if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            chain.doFilter(request, response);
-        }catch (JwtException e){
-            Map<String,String> body = new HashMap<>();
-            body.put("message","Invalid JWT token");
-            body.put("error",e.getMessage());
+                    if(this.jwtUtilService.validateToken(jwt, userDetails)) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                }
+            }
 
-            response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-            response.setStatus(401);
-            response.setContentType(CONTENT_TYPE);
-        }
 
+        chain.doFilter(request, response);
     }
 }

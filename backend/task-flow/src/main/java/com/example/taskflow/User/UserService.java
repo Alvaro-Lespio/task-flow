@@ -2,6 +2,13 @@ package com.example.taskflow.User;
 
 import com.example.taskflow.Role.IRoleRepository;
 import com.example.taskflow.Role.Role;
+import com.example.taskflow.Security.JwtUtilService;
+import com.example.taskflow.Security.JwtValidationFilter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +22,16 @@ public class UserService implements IUserService{
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(IUserRepository userRepository, IRoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    private final UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtilService jwtUtilService;
+    public UserService(IUserRepository userRepository, IRoleRepository roleRepository, PasswordEncoder passwordEncoder,UserDetailsService userDetailsService,AuthenticationManager authenticationManager,JwtUtilService jwtUtilService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtilService = jwtUtilService;
     }
 
     @Override
@@ -43,4 +55,15 @@ public class UserService implements IUserService{
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+    public String login(User user) throws JsonProcessingException {
+        this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                user.getUsername(), user.getPassword()
+        ));
+
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(user.getUsername());
+        return this.jwtUtilService.genereateToken(userDetails);
+
+    }
+
 }
