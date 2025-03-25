@@ -10,18 +10,18 @@ export class AuthService {
 
   constructor(private httpClient:HttpClient,private router: Router) { }
 
-  private LOGIN_URL = 'http://localhost:8080/login';
+  private LOGIN_URL = 'http://localhost:8080/api/users/login';
   private tokenKey = 'authToken';
 
-  login(user:string, password:string):Observable<any>{
-    return this.httpClient.post<any>(this.LOGIN_URL, {user,password}).pipe(
-      tap(response =>{
-        if(response.token){
-          console.log(response.token);
-        }
-      })
-    )
-  }
+  login(user: string, password: string): Observable<string> {
+    return this.httpClient.post(this.LOGIN_URL, { username: user, password }, { responseType: 'text' }).pipe(
+        tap(token => {
+            if (token) {
+                this.setToken(token);
+            }
+        })
+    );
+}
 
   private setToken(token:string): void{
     localStorage.setItem(this.tokenKey,token);
