@@ -2,6 +2,7 @@ package com.example.taskflow.Security;
 
 import com.example.taskflow.User.IUserRepository;
 import com.example.taskflow.User.User;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.Transient;
@@ -26,17 +27,11 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = userRepository.findByUsername(username);
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException(String.format("User %s not found", username));
         }
-        User user = userOptional.orElseThrow();
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(),
-                user.isEnabled(),
-                true,
-                true,
-                true,
-                authorities);
+        User user = userOptional.get();
+        Hibernate.initialize(user.getRoles());
+        return user;
     }
 }
