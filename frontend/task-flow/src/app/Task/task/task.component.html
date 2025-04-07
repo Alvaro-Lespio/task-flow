@@ -1,0 +1,41 @@
+   <div *ngIf="authService.isLoggedIn()">
+    <h3>Tasks:</h3>
+  <ul>
+    <li *ngFor="let task of tasks">
+      {{task.title}} - {{task.description}} ({{task.difficulty}})
+      <span *ngIf="task.assignedTo"> - Assigned to: {{getAssignedToUsername(task.assignedTo)}}</span>
+      <button (click)="deleteTask(task.id)">Delete</button>
+      <button (click)="startEditing(task)">Edit</button>
+      
+      <ng-container *ngIf="editingTask?.id === task.id">
+        <form (ngSubmit)="onUpdateTask()">
+          <input [(ngModel)]="editingTask.title" name="editTitle" placeholder="Task Title" required>
+          <input [(ngModel)]="editingTask.description" name="editDescription" placeholder="Description" required>
+          <input [(ngModel)]="editingTask.finishDate" name="editFinishDate" type="datetime-local" required>
+          <select [(ngModel)]="editingTask.difficulty" name="editDifficulty" required>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+          <input [(ngModel)]="editingTask.assignedTo" name="editAssignedTo" placeholder="Assign to (optional)">
+          <button type="submit">Update Task</button>
+          <button type="button" (click)="cancelEditing()">Cancel</button>
+        </form>
+      </ng-container>
+    </li>
+  </ul>
+    <h3>Create New Task</h3>
+        <form (ngSubmit)="onCreateTask()">
+        <input [(ngModel)]="newTask.title" name="title" placeholder="Task Title" required>
+        <input [(ngModel)]="newTask.description" name="description" placeholder="Description" required>
+        <input [(ngModel)]="newTask.finishDate" name="finishDate" type="datetime-local" required>
+        <select [(ngModel)]="newTask.difficulty" name="difficulty" required>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+        </select>
+        <input [(ngModel)]="newTask.assignedTo" name="assignedTo" placeholder="Assign to (optional)">
+        <button type="submit">Create Task</button>
+        </form>
+  </div>
+  

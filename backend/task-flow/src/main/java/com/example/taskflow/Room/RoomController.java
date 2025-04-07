@@ -56,4 +56,5 @@ public class RoomController {
     public ResponseEntity<?> updateTaskToRoom(@PathVariable Long id, @AuthenticationPrincipal User user,@RequestBody TaskRequestDTO task,@PathVariable Long idTask) {
         return new ResponseEntity<>(roomService.updateTaskById(id,user,task,idTask),HttpStatus.OK);
     }
+
 }

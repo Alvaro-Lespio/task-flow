@@ -1,0 +1,56 @@
+<!--
+<div class="container">
+    <h2>Mis Salas</h2>
+  
+    <ul class="room-list">
+      <li *ngFor="let room of rooms" class="room-item">
+        {{ room.name }}
+      </li>
+    </ul>
+  
+    <button (click)="showCreateRoomForm()" class="add-room-button">
+      +
+    </button>
+  
+    <div *ngIf="showForm" class="create-room-form">
+      <h3>Crear Nueva Sala</h3>
+  
+      <form (ngSubmit)="createRoom()" *ngIf="authService.isLoggedIn()>
+        <div class="form-group">
+          <label for="name">Nombre de la Sala:</label>
+          <input type="text" id="name" name="name" [(ngModel)]="name" required>
+        </div>
+  
+        <div class="form-group">
+          <label for="password">Contraseña:</label>
+          <input type="password" id="password" name="password" [(ngModel)]="password" required>
+        </div>
+  
+        <button type="submit" class="submit-button">Crear Sala</button>
+      </form>
+    </div>
+  </div>
+-->
+<div *ngIf="authService.isLoggedIn()">
+  <form (ngSubmit)="createRoom()">
+    <input [(ngModel)]="name" placeholder="Room Name" name="name">
+    <input [(ngModel)]="password" type="password" placeholder="Password" name="password">
+    <button type="submit" [disabled]="isLoading">Create Room</button>
+  </form>
+
+  <div *ngIf="error" style="color: red">{{ error }}</div>
+
+  <div *ngIf="isLoading">Loading rooms...</div>
+  <div *ngIf="!isLoading && rooms.length > 0">
+    <h3>Your Rooms:</h3>
+    <ul>
+      <li *ngFor="let room of rooms">
+        {{ room.name }}
+        <button (click)="viewRoom(room.id)">View Room</button>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="!isLoading && rooms.length === 0">
+    <p>No rooms created yet.</p>
+  </div>
+</div>

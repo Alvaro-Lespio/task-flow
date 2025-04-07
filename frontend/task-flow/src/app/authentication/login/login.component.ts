@@ -18,7 +18,7 @@ export class LoginComponent {
 
   login():void{
     this.authService.login(this.username,this.password).subscribe({
-      next: ()=> alert("Navigate to dashboard"),
+      next: ()=> this.router.navigate(['/home']),
       error:( err ) => console.log('Login failed',err)
     })
   }
