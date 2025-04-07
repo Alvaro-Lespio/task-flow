@@ -27,7 +27,7 @@ public class Task {
     private Difficulty difficulty;
 
     @ManyToOne
-    @JoinColumn(name = "room_id",nullable = false)
+    @JoinColumn(name = "room_code",nullable = false)
     @JsonBackReference
     private Room room;
     @ManyToOne

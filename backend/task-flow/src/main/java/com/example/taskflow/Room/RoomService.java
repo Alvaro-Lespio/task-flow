@@ -30,8 +30,8 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room getRoomById(Long roomId) {
-        return roomRepository.findById(roomId).orElse(null);
+    public Room getRoomById(String roomId) {
+        return roomRepository.findByRoomCode(roomId);
     }
 
     @Override
@@ -40,8 +40,8 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room updateRoom(Room room, User user,Long roomModifyId) {
-        Room modifyRoom = roomRepository.findById(roomModifyId).orElse(null);
+    public Room updateRoom(Room room, User user,String roomModifyId) {
+        Room modifyRoom = roomRepository.findByRoomCode(roomModifyId);
         String hashedPassword = passwordEncoder.encode(room.getPassword());
         if(modifyRoom != null) {
             modifyRoom.setName(room.getName());
@@ -52,9 +52,9 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public String deleteRoom(Long roomId) {
+    public String deleteRoom(String roomId) {
         String message = "Failed";
-        Room deleteRoom = roomRepository.findById(roomId).orElse(null);
+        Room deleteRoom = roomRepository.findByRoomCode(roomId);
         if(deleteRoom != null) {
             roomRepository.delete(deleteRoom);
             message = "Success";
@@ -63,8 +63,8 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room addTaskToRoom(Long roomId, User user, TaskRequestDTO taskrequest) {
-        Room room = roomRepository.findById(roomId).orElse(null);
+    public Room addTaskToRoom(String roomId, User user, TaskRequestDTO taskrequest) {
+        Room room = roomRepository.findByRoomCode(roomId);
         if(room != null) {
             Task taskRoom = new Task();
             taskRoom.setDescription(taskrequest.getDescription());
@@ -91,9 +91,9 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public String removeTaskFromRoom(Long roomId, Long taskId) {
+    public String removeTaskFromRoom(String roomId, Long taskId) {
         String message = "Failed";
-        Room room = roomRepository.findById(roomId).orElse(null);
+        Room room = roomRepository.findByRoomCode(roomId);
         if(room != null) {
             taskRepository.deleteById(taskId);
             message = "Success";
@@ -108,8 +108,8 @@ public class RoomService implements IRoomService {
 
 
     @Override
-    public Room updateTaskById(Long roomId, User user, TaskRequestDTO taskrequest, Long taskModifyId) {
-        Room room = roomRepository.findById(roomId).orElse(null);
+    public Room updateTaskById(String roomId, User user, TaskRequestDTO taskrequest, Long taskModifyId) {
+        Room room = roomRepository.findByRoomCode(roomId);
         if(room != null) {
             Task task = taskRepository.findById(taskModifyId).orElse(null);
             if(task != null) {
@@ -134,5 +134,26 @@ public class RoomService implements IRoomService {
             return roomRepository.save(room);
         }
         return null;
+    }
+
+    @Override
+    public Room joinRoom(String roomCode, String password, User user) {
+        Room room = roomRepository.findByRoomCode(roomCode);
+        if(room != null) {
+            if(room.getUsers().contains(user)) {
+                throw new RuntimeException("User already joined");
+            }
+            String storedHashedPassword = room.getPassword();
+            if(storedHashedPassword != null && !storedHashedPassword.isEmpty()) {
+                if(password == null || password.isEmpty()) {
+                    throw new RuntimeException("Password is null or empty");
+                }
+                if(!passwordEncoder.matches(password, storedHashedPassword)) {
+                    throw new RuntimeException("Wrong password");
+                }
+            }
+            room.addUser(user);
+        }
+        return roomRepository.save(room);
     }
 }

@@ -22,7 +22,7 @@ public class RoomController {
         return new ResponseEntity<>(roomService.createRoom(room,user), HttpStatus.CREATED);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getRoomById(@PathVariable Long id) {
+    public ResponseEntity<?> getRoomById(@PathVariable String id) {
         return new ResponseEntity<>(roomService.getRoomById(id), HttpStatus.OK);
     }
     @GetMapping
@@ -31,21 +31,21 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user,@PathVariable Long id) {
+    public ResponseEntity<?> updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user,@PathVariable String id) {
         return new ResponseEntity<>(roomService.updateRoom(room,user,id), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> updateRoom(@PathVariable Long id) {
+    public ResponseEntity<?> updateRoom(@PathVariable String id) {
         return new ResponseEntity<>(roomService.deleteRoom(id),HttpStatus.OK);
     }
 
     @PostMapping("/task/{id}")
-    public ResponseEntity<?> addTaskToRoom(@PathVariable Long id, @AuthenticationPrincipal User user,@RequestBody TaskRequestDTO task) {
+    public ResponseEntity<?> addTaskToRoom(@PathVariable String id, @AuthenticationPrincipal User user,@RequestBody TaskRequestDTO task) {
         return new ResponseEntity<>(roomService.addTaskToRoom(id,user,task),HttpStatus.OK);
     }
 
     @DeleteMapping("/task/{id}/{idTask}")
-    public ResponseEntity<?> removeTaskFromRoom(@PathVariable Long id,@PathVariable Long idTask) {
+    public ResponseEntity<?> removeTaskFromRoom(@PathVariable String id,@PathVariable Long idTask) {
         return new ResponseEntity<>(roomService.removeTaskFromRoom(id,idTask),HttpStatus.OK);
     }
     @GetMapping("/task/{id}")
@@ -53,8 +53,12 @@ public class RoomController {
         return new ResponseEntity<>(roomService.getTaskById(id),HttpStatus.OK);
     }
     @PutMapping("/task/{id}/{idTask}")
-    public ResponseEntity<?> updateTaskToRoom(@PathVariable Long id, @AuthenticationPrincipal User user,@RequestBody TaskRequestDTO task,@PathVariable Long idTask) {
+    public ResponseEntity<?> updateTaskToRoom(@PathVariable String id, @AuthenticationPrincipal User user,@RequestBody TaskRequestDTO task,@PathVariable Long idTask) {
         return new ResponseEntity<>(roomService.updateTaskById(id,user,task,idTask),HttpStatus.OK);
     }
+    @PostMapping("/join/{id}/{password}")
+    public ResponseEntity<?> joinRoom(@PathVariable String id,@PathVariable String password, @AuthenticationPrincipal User user) {
 
+        return new ResponseEntity<>(roomService.joinRoom(id,password,user),HttpStatus.OK);
+    }
 }

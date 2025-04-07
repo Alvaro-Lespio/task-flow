@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -22,13 +23,12 @@ export class RegisterComponent {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService:AuthService
   ) {}
 
   onSubmit() {
-    const url = 'http://localhost:8080/api/users/register';
-    
-    this.http.post(url, this.registerData)
+    this.authService.register(this.registerData)
       .subscribe({
         next: (response) => {
           console.log('Registration successful', response);

@@ -9,7 +9,7 @@
       {{user.username}} - {{user.admin ? 'Admin' : 'User'}}
     </li>
   </ul>
-  <app-task [roomId]="room.id" [tasks]="room.tasks" (taskChanged)="loadRoom()"></app-task>
+  <app-task [roomId]="room.roomCode" [tasks]="room.tasks" (taskChanged)="loadRoom()"></app-task>
 
   <button (click)="goBack()">Back to Rooms</button>
 </div>

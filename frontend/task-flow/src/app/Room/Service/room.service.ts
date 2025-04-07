@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { AuthService } from '../../authentication/services/auth.service';
 import { Room } from '../Entitie/room';
+import { JoinRoom } from '../Entitie/JoinRoom';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,14 @@ import { Room } from '../Entitie/room';
 export class RoomService {
   private API_URL = 'http://localhost:8080/api/room'
   constructor(private http: HttpClient,private authService:AuthService) { 
+  }
+
+  joinRoom(roomCode:string, password:string):Observable<any>{
+    const body = new JoinRoom(roomCode,password);
+    const headers = new HttpHeaders({
+      'Authorization' : `Bearer ${this.authService.getToken()}`
+    });
+    return this.http.post(`${this.API_URL}/join/${roomCode}/${password}`,body,{headers})
   }
 
   createRoom(name:string, password: string):Observable<any>{
@@ -25,7 +34,7 @@ export class RoomService {
     });
     return this.http.get<any[]>(this.API_URL,{headers});
   }
-  getRoomById(id: number): Observable<any> {
+  getRoomById(id: string | null): Observable<any> {
     if (!this.authService.isLoggedIn()) {
       return throwError(() => new Error('User not authenticated'));
     }
@@ -40,7 +49,7 @@ export class RoomService {
     );
   }  
   
-  createTask(roomId: number, task: {
+  createTask(roomId: string, task: {
     title: string;
     description: string;
     finishDate: string;
@@ -59,7 +68,7 @@ export class RoomService {
     );
   }
 
-  deleteTask(roomId: number, taskId: number): Observable<any> {
+  deleteTask(roomId: string, taskId: number): Observable<any> {
     if (!this.authService.isLoggedIn()) {
       return throwError(() => new Error('User not authenticated'));
     }
@@ -71,7 +80,7 @@ export class RoomService {
     );
   }
 
-  updateTask(roomId: number, taskId: number, task: {
+  updateTask(roomId: string, taskId: number, task: {
     title: string;
     description: string;
     finishDate: string;

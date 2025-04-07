@@ -13,7 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 })
 export class TaskComponent implements OnChanges{
   
-  @Input() roomId!: number; // Required input from parent component
+  @Input() roomId!: string; 
   @Input() tasks: any[] = [];
   @Output() taskChanged = new EventEmitter<void>(); // Notify parent when task is created
 
