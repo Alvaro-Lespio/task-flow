@@ -1,0 +1,15 @@
+<div *ngIf="authService.isLoggedIn() && room">
+  <h2>{{room.name}}</h2>
+  <p>ID: {{room.id}}</p>
+  <p>Owner: {{room.owner.username}}</p>
+  
+  <h3>Users:</h3>
+  <ul>
+    <li *ngFor="let user of room.users">
+      {{user.username}} - {{user.admin ? 'Admin' : 'User'}}
+    </li>
+  </ul>
+  <app-task [roomId]="room.id" [tasks]="room.tasks" (taskChanged)="loadRoom()"></app-task>
+
+  <button (click)="goBack()">Back to Rooms</button>
+</div>
