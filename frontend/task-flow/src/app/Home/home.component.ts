@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit{
         }
       })
   }
-  viewRoom(roomId: number) {
+  viewRoom(roomId: string) {
     this.router.navigate(['/room', roomId]);
   }
 }

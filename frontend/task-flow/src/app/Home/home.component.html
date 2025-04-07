@@ -46,7 +46,7 @@
     <ul>
       <li *ngFor="let room of rooms">
         {{ room.name }}
-        <button (click)="viewRoom(room.id)">View Room</button>
+        <button (click)="viewRoom(room.roomCode)">View Room</button>
       </li>
     </ul>
   </div>

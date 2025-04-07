@@ -14,16 +14,18 @@ import java.util.Set;
 @Table(name ="rooms")
 public class Room {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String name;
     private String password;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(unique = true, nullable = false)
+    private String roomCode;
 
     @ManyToMany
     @JoinTable(
             name = "rooms_users",
-            joinColumns = @JoinColumn(name = "room_id"),
+            joinColumns = @JoinColumn(name = "room_code"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> users = new HashSet<>();
@@ -48,12 +50,12 @@ public class Room {
 
     }
 
-    public Long getId() {
-        return id;
+    public String getRoomCode() {
+        return roomCode;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setRoomCode(String roomCode) {
+        this.roomCode = roomCode;
     }
 
     public String getName() {
@@ -98,5 +100,8 @@ public class Room {
     public void addTask(Task task) {
         tasks.add(task);
         task.setRoom(this);
+    }
+    public void addUser(User user) {
+        this.users.add(user);
     }
 }

@@ -10,12 +10,13 @@ import java.util.List;
 
 public interface IRoomService {
     Room createRoom(Room room, User user);
-    Room getRoomById(Long roomId);
+    Room getRoomById(String roomId);
     List<Room> getAllRooms();
-    Room updateRoom(Room room, User user,Long roomModifyId);
-    String deleteRoom(Long roomId);
-    Room addTaskToRoom(Long roomId, User user, TaskRequestDTO taskrequest);
-    String removeTaskFromRoom(Long roomId, Long taskId);
+    Room updateRoom(Room room, User user,String roomModifyId);
+    String deleteRoom(String roomId);
+    Room addTaskToRoom(String roomId, User user, TaskRequestDTO taskrequest);
+    String removeTaskFromRoom(String roomId, Long taskId);
     Task getTaskById(Long taskId);
-    Room updateTaskById(Long roomId, User user, TaskRequestDTO taskrequest, Long taskModifyId);
+    Room updateTaskById(String roomId, User user, TaskRequestDTO taskrequest, Long taskModifyId);
+    Room joinRoom(String roomCode,String password, User user);
 }
