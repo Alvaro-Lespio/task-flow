@@ -35,8 +35,9 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+    public List<Room> getAllRooms(User user) {
+        Long id  = user.getId();
+        return roomRepository.findRoomsById(id);
     }
 
     @Override
@@ -76,15 +77,18 @@ public class RoomService implements IRoomService {
             String assignedToUsername = taskrequest.getAssignedTo();
             if (assignedToUsername != null && !assignedToUsername.isEmpty()) {
                 User userAssigned = userRepository.findByUsername(assignedToUsername).orElse(null);
-                if(userAssigned != null) {
-                    taskRoom.setAssignedTo(userAssigned);
+                if (userAssigned == null) {
+                    throw new IllegalArgumentException("User not found: " + assignedToUsername);
                 }
+                if (!room.getUsers().contains(userAssigned)) {
+                    throw new IllegalArgumentException("Hey, " + assignedToUsername + " isn't joined in the room!");
+                }
+                taskRoom.setAssignedTo(userAssigned);
+
             } else {
                 taskRoom.setAssignedTo(user);
             }
-            System.out.println("Tasks antes: " + room.getTasks().size());
             room.addTask(taskRoom);
-            System.out.println("Tasks después: " + room.getTasks().size());
             return roomRepository.save(room);
         }
         return null;

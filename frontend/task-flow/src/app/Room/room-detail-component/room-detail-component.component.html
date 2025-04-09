@@ -10,6 +10,6 @@
     </li>
   </ul>
   <app-task [roomId]="room.roomCode" [tasks]="room.tasks" (taskChanged)="loadRoom()"></app-task>
-
+  <button (click)="copyRoomCode()">Copy Room Code</button>
   <button (click)="goBack()">Back to Rooms</button>
 </div>

@@ -43,6 +43,15 @@ export class RoomDetailComponentComponent implements OnInit{
     });
   }
 
+  copyRoomCode() {
+    const roomId = this.route.snapshot.paramMap.get('id');
+    navigator.clipboard.writeText(roomId || '').then(() => {
+      alert('Room code copied to clipboard!'); 
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  }
+
   goBack() {
     this.router.navigate(['/home']);
   }

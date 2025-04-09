@@ -52,13 +52,20 @@ export class HomeComponent implements OnInit{
           this.isLoading = false;
         },
         error: (err) => {
-          this.error = 'Failed to load rooms';
-          this.isLoading = false;
-          console.error('Failed to load rooms', err);
+            this.error = 'Failed to load rooms';
+            console.error('Failed to load rooms', err);
+            this.isLoading = false;
+         
         }
       })
   }
   viewRoom(roomId: string) {
     this.router.navigate(['/room', roomId]);
+  }
+  joinRoom(){
+    this.router.navigate(['/room/join'])
+  }
+  logOut(){
+    this.authService.logout();
   }
 }

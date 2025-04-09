@@ -2,7 +2,7 @@
     <h3>Tasks:</h3>
   <ul>
     <li *ngFor="let task of tasks">
-      {{task.title}} - {{task.description}} ({{task.difficulty}})
+      Title:{{task.title}} - Description:{{task.description}} - Finish Date:{{task.finishDate| date: 'MM/dd hh:mm a'}} Difficulty:{{task.difficulty}}
       <span *ngIf="task.assignedTo"> - Assigned to: {{getAssignedToUsername(task.assignedTo)}}</span>
       <button (click)="deleteTask(task.id)">Delete</button>
       <button (click)="startEditing(task)">Edit</button>
@@ -11,7 +11,7 @@
         <form (ngSubmit)="onUpdateTask()">
           <input [(ngModel)]="editingTask.title" name="editTitle" placeholder="Task Title" required>
           <input [(ngModel)]="editingTask.description" name="editDescription" placeholder="Description" required>
-          <input [(ngModel)]="editingTask.finishDate" name="editFinishDate" type="datetime-local" required>
+          <input type="datetime-local" [(ngModel)]="displayFinishDate" name="editFinishDate" required>
           <select [(ngModel)]="editingTask.difficulty" name="editDifficulty" required>
             <option value="HIGH">High</option>
             <option value="MEDIUM">Medium</option>

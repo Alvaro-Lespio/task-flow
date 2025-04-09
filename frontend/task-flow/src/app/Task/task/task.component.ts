@@ -25,7 +25,7 @@ export class TaskComponent implements OnChanges{
     assignedTo: '' 
   };
   editingTask: any | null = null;
-
+  displayFinishDate: string | null = null;
   constructor(
     public authService: AuthService,
     private roomService: RoomService,
@@ -56,7 +56,11 @@ export class TaskComponent implements OnChanges{
         this.resetForm();
         this.taskChanged.emit(); // Notify parent to refresh
       },
-      error: (err) => console.error('Failed to create task', err)
+      error: (err) => {
+        const errorMessage = err.error || 'Failed to create task';
+        alert(errorMessage);
+        console.error('Failed to create task', err)
+      }
     });
   }
 
@@ -78,16 +82,24 @@ export class TaskComponent implements OnChanges{
   }
   startEditing(task: any) {
     this.editingTask = { ...task };
-  }
+    if (this.editingTask.finishDate) {
+      const date = new Date(this.editingTask.finishDate);
+      this.displayFinishDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}T${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    } else {
+      this.displayFinishDate = null;
+      }
+    }
 
   onUpdateTask() {
     if (!this.editingTask) return;
 
-    const formattedDate = new Date(this.editingTask.finishDate).toISOString();
+    if (this.displayFinishDate) {
+      this.editingTask.finishDate = new Date(this.displayFinishDate).toISOString();
+    }
     const taskData: any = {
       title: this.editingTask.title,
       description: this.editingTask.description,
-      finishDate: formattedDate,
+      finishDate: this.displayFinishDate,
       difficulty: this.editingTask.difficulty
     };
 
