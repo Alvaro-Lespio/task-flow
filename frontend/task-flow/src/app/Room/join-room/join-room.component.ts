@@ -14,16 +14,22 @@ export class JoinRoomComponent {
 
   roomCode:string="";
   password:string="";
+  isLoading: boolean = false; 
   constructor(private roomService: RoomService, private router: Router) {}
   onSubmit(){
     this.roomService.joinRoom(this.roomCode, this.password)
       .subscribe({
         next: (response) => {
-          // On successful join, navigate to the room detail component
+          this.isLoading = true; 
           this.router.navigate(['/room', this.roomCode]);
         },
         error: (error) => {
           console.log(error);
         }
   })};
+
+
+  goBack(){
+    this.router.navigate(['/home'])
+  }
 }

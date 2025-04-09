@@ -17,16 +17,18 @@ export const routes: Routes = [
         component:HomeComponent,
         canActivate:[authGuard]
     },
-    { 
-        path: 'room/:id', 
-        component: RoomDetailComponentComponent 
-    },
     {
         path:'register',
         component:RegisterComponent
     },
     {
         path:'room/join',
-        component:JoinRoomComponent
+        component:JoinRoomComponent,
+        canActivate:[authGuard]
+    },
+    { 
+        path: 'room/:id', 
+        component: RoomDetailComponentComponent ,
+        canActivate: [authGuard]
     }
 ];

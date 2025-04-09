@@ -25,9 +25,9 @@ public class RoomController {
     public ResponseEntity<?> getRoomById(@PathVariable String id) {
         return new ResponseEntity<>(roomService.getRoomById(id), HttpStatus.OK);
     }
-    @GetMapping
-    public ResponseEntity<?> getAllRooms() {
-        return new ResponseEntity<>(roomService.getAllRooms(), HttpStatus.OK);
+    @GetMapping("")
+    public ResponseEntity<?> getAllRooms(@AuthenticationPrincipal User user) {
+        return new ResponseEntity<>(roomService.getAllRooms(user), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
