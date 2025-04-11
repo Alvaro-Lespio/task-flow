@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public interface IRoomService {
-    Room createRoom(Room room, User user);
+    Room createRoom(RoomDTO room, User user);
     Room getRoomById(String roomId);
     List<Room> getAllRooms(User user);
-    Room updateRoom(Room room, User user,String roomModifyId);
+    Room updateRoom(RoomDTO room, User user,String roomModifyId);
     String deleteRoom(String roomId);
     Room addTaskToRoom(String roomId, User user, TaskRequestDTO taskrequest);
     String removeTaskFromRoom(String roomId, Long taskId);
