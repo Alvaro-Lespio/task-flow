@@ -12,8 +12,18 @@
     <h3>Your Rooms:</h3>
     <ul>
       <li *ngFor="let room of rooms">
-        {{ room.name }}
-        <button (click)="viewRoom(room.roomCode)">View Room</button>
+        <ng-container *ngIf="editingRoomId !== room.roomCode; else editMode">
+          {{ room.name }}
+          <button (click)="viewRoom(room.roomCode)">View Room</button>
+          <button (click)="updateRoom(room)">Edit Room</button>
+          <button (click)="deleteRoom(room.roomCode)">Delete Room</button>
+        </ng-container>
+        <ng-template #editMode>
+          <input [(ngModel)]="editName" placeholder="Room Name" name="editName" required>
+          <input [(ngModel)]="editPassword" type="password" placeholder="Password" name="editPassword">
+          <button (click)="saveRoom()" [disabled]="isLoading">Save</button>
+          <button (click)="cancelEdit()" [disabled]="isLoading">Cancel</button>
+        </ng-template>
       </li>
     </ul>
   </div>

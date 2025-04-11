@@ -1,5 +1,9 @@
 package com.example.taskflow.Room;
 
+import com.example.taskflow.Exception.RoomCreateFailedException;
+import com.example.taskflow.Exception.RoomUpdateFailedException;
+import com.example.taskflow.Exception.TaskCreateFailedException;
+import com.example.taskflow.Exception.TaskUpdateFailedException;
 import com.example.taskflow.Task.ITaskRepository;
 import com.example.taskflow.Task.Task;
 import com.example.taskflow.Task.TaskRequestDTO;
@@ -23,7 +27,12 @@ public class RoomService implements IRoomService {
         this.taskRepository = taskRepository;
     }
 
-    public Room createRoom(Room roomRequest, User owner) {
+    public Room createRoom(RoomDTO roomRequest, User owner) {
+        if(roomRequest == null){
+            throw new RoomCreateFailedException("Room request is null");
+        }else if(roomRequest.getName() == null || roomRequest.getPassword() == null){
+            throw new RoomCreateFailedException("Room name or password is null");
+        }
         String hashedPassword = passwordEncoder.encode(roomRequest.getPassword());
         Room room = new Room(roomRequest.getName(),hashedPassword,owner);
         return roomRepository.save(room);
@@ -41,12 +50,17 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room updateRoom(Room room, User user,String roomModifyId) {
+    public Room updateRoom(RoomDTO room, User user,String roomModifyId) {
+        if(room == null){
+            throw new RoomUpdateFailedException("room is null");
+        }
         Room modifyRoom = roomRepository.findByRoomCode(roomModifyId);
-        String hashedPassword = passwordEncoder.encode(room.getPassword());
         if(modifyRoom != null) {
+            if(room.getPassword()!=null) {
+                String hashedPassword = passwordEncoder.encode(room.getPassword());
+                modifyRoom.setPassword(hashedPassword);
+            }
             modifyRoom.setName(room.getName());
-            modifyRoom.setPassword(hashedPassword);
             roomRepository.save(modifyRoom);
         }
         return modifyRoom;
@@ -66,6 +80,11 @@ public class RoomService implements IRoomService {
     @Override
     public Room addTaskToRoom(String roomId, User user, TaskRequestDTO taskrequest) {
         Room room = roomRepository.findByRoomCode(roomId);
+        if(taskrequest == null) {
+            throw new TaskCreateFailedException("Task request is null");
+        }else if(taskrequest.getDescription() == null || taskrequest.getDifficulty() == null || taskrequest.getFinishDate() == null || taskrequest.getTitle() == null) {
+            throw new TaskCreateFailedException("Task request values are null");
+        }
         if(room != null) {
             Task taskRoom = new Task();
             taskRoom.setDescription(taskrequest.getDescription());
@@ -113,6 +132,11 @@ public class RoomService implements IRoomService {
 
     @Override
     public Room updateTaskById(String roomId, User user, TaskRequestDTO taskrequest, Long taskModifyId) {
+        if(taskrequest == null) {
+            throw new TaskUpdateFailedException("Task request is null");
+        }else if(taskrequest.getDescription() == null || taskrequest.getDifficulty() == null || taskrequest.getFinishDate() == null || taskrequest.getTitle() == null) {
+            throw new TaskUpdateFailedException("Task request values are null");
+        }
         Room room = roomRepository.findByRoomCode(roomId);
         if(room != null) {
             Task task = taskRepository.findById(taskModifyId).orElse(null);

@@ -28,6 +28,17 @@ export class RoomService {
     });
     return this.http.post(this.API_URL,body,{headers});
   }
+  deleteRoom(roomId:string):Observable<any>{
+    if (!this.authService.isLoggedIn()) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    });
+    return this.http.delete(`${this.API_URL}/${roomId}`, { headers, responseType: 'text' }).pipe(
+      catchError(this.handleError)
+    );
+  }
   getRooms():Observable<any[]>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getToken()}`
@@ -48,12 +59,26 @@ export class RoomService {
       catchError(this.handleError)
     );
   }  
-  
+  updateRoom(roomId: string, room: {
+    name?: string;
+    password?: string;
+  }):Observable<any> {
+    if (!this.authService.isLoggedIn()) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`,
+      'Content-Type': 'application/json'
+    });
+    return this.http.put(`${this.API_URL}/${roomId}`, room, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
   createTask(roomId: string, task: {
     title: string;
     description: string;
     finishDate: string;
-    difficulty: string; // HIGH, MEDIUM, LOW will be passed here
+    difficulty: string; 
     assignedTo?: string;
   }): Observable<any> {
     if (!this.authService.isLoggedIn()) {

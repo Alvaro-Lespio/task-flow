@@ -1,9 +1,10 @@
 package com.example.taskflow.User;
 
+import com.example.taskflow.Exception.UserCreateFailedException;
+import com.example.taskflow.Exception.UserLoginFailedException;
 import com.example.taskflow.Role.IRoleRepository;
 import com.example.taskflow.Role.Role;
 import com.example.taskflow.Security.JwtUtilService;
-import com.example.taskflow.Security.JwtValidationFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,6 +44,11 @@ public class UserService implements IUserService{
     @Override
     @Transactional
     public User save(User user) {
+        if(user == null) {
+            throw new UserCreateFailedException("The user is null");
+        }else if(user.getUsername() == null || user.getPassword() == null) {
+            throw new UserCreateFailedException("The username or password is null");
+        }
         Optional<Role> optionalRoleUser = roleRepository.findByName("ROLE_USER");
         List<Role> roles = new ArrayList<>();
 
@@ -57,6 +63,11 @@ public class UserService implements IUserService{
     }
 
     public String login(User user) throws JsonProcessingException {
+        if(user == null) {
+            throw new UserLoginFailedException("The user is null");
+        }if(user.getUsername() == null || user.getPassword() == null) {
+            throw new UserLoginFailedException("The username or password is null");
+        }
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 user.getUsername(), user.getPassword()
         ));

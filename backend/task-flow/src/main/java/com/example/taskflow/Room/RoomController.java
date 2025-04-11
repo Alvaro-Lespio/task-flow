@@ -18,7 +18,7 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRoom(@RequestBody Room room, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> createRoom(@RequestBody RoomDTO room, @AuthenticationPrincipal User user) {
         return new ResponseEntity<>(roomService.createRoom(room,user), HttpStatus.CREATED);
     }
     @GetMapping("/{id}")
@@ -31,11 +31,11 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user,@PathVariable String id) {
+    public ResponseEntity<?> updateRoom(@RequestBody RoomDTO room, @AuthenticationPrincipal User user,@PathVariable String id) {
         return new ResponseEntity<>(roomService.updateRoom(room,user,id), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> updateRoom(@PathVariable String id) {
+    public ResponseEntity<?> deleteRoom(@PathVariable String id) {
         return new ResponseEntity<>(roomService.deleteRoom(id),HttpStatus.OK);
     }
 

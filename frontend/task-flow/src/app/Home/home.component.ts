@@ -19,7 +19,9 @@ export class HomeComponent implements OnInit{
   rooms: any[] = [];
   isLoading: boolean = false;
   error: string | null = null;
-
+  editName: string = ''; 
+  editPassword: string = '';
+  editingRoomId: string | null = null;
   constructor(private roomService: RoomService,public authService:AuthService,private router: Router){}
 
   ngOnInit(): void {
@@ -32,7 +34,6 @@ export class HomeComponent implements OnInit{
     this.roomService.createRoom(this.name, this.password)
       .subscribe({
         next: (response) => {
-          console.log('Room created', response);
           this.getAllRooms(); 
           this.name = ''; 
           this.password = '';
@@ -59,6 +60,52 @@ export class HomeComponent implements OnInit{
         }
       })
   }
+  deleteRoom(roomCode:string){
+    const confirmDelete = confirm('Are you sure you want to delete this room?');
+    if (confirmDelete) {
+      this.roomService.deleteRoom(roomCode).subscribe({
+        next: () => {
+          console.log('room deleted successfully');
+          this.getAllRooms();
+        },
+        error: (err) => {
+          console.error('Failed to delete task', err);
+        }
+      });
+    }
+  }
+  updateRoom(room: any) {
+    this.editingRoomId = room.roomCode; 
+    this.editName = room.name; 
+    this.editPassword = room.password || '';
+  }
+
+  saveRoom() {
+    if (!this.editingRoomId) return;
+
+    const updatedRoom = {
+      name: this.editName,
+      password: this.editPassword || undefined 
+    };
+    this.isLoading = true;
+    this.roomService.updateRoom(this.editingRoomId, updatedRoom).subscribe({
+      next: (response) => {
+        this.getAllRooms();
+        this.cancelEdit();
+      },
+      error: (err) => {
+        console.error('Room update failed', err);
+        this.error = 'Failed to update room';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  cancelEdit() {
+    this.editingRoomId = null;
+    this.editName = '';
+    this.editPassword = '';
+  }
   viewRoom(roomId: string) {
     this.router.navigate(['/room', roomId]);
   }
@@ -69,3 +116,4 @@ export class HomeComponent implements OnInit{
     this.authService.logout();
   }
 }
+
